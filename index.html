@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>SON Cell</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700&display=swap');
+
+:root{
+  --primary:#C9A227;
+  --primary-light:#D6B74D;
+  --primary-dark:#8B6A1A;
+  --primary-soft:rgba(201,162,39,0.15);
+  --secondary:#1E2A78;
+  --accent:#1F6B3D;
+  --wine:#6A1B1B;
+  --royal-purple:#4A235A;
+  --black:#0B0B0B;
+  --gray-dark:#1E1E1E;
+  --bg:#F8F8F8;
+  --card:#1A1A1A;
+  --text:#F8F8F8;
+  --text-soft:#B0B0B0;
+  --border:#2B2B2B;
+  --input-bg:#111111;
+  --hover-bg:rgba(201,162,39,0.12);
+  --idle-dot:#C4B74D;
+  --scrollbar:#5B5B5B;
+  --radius:22px;
+  --radius-sm:14px;
+  --shadow:0 20px 44px rgba(0,0,0,0.24);
+  --shadow-lg:0 28px 70px rgba(0,0,0,0.32);
+  --topbar-bg:rgba(11,11,11,0.95);
+}
+[data-theme="dark"]{
+  --primary:#C9A227;
+  --primary-light:#D6B74D;
+  --primary-dark:#8B6A1A;
+  --secondary:#1E2A78;
+  --accent:#1F6B3D;
+  --wine:#6A1B1B;
+  --royal-purple:#4A235A;
+  --black:#0B0B0B;
+  --gray-dark:#1E1E1E;
+  --bg:#0B0B0B;
+  --card:#1A1A1A;
+  --text:#F8F8F8;
+  --text-soft:#B0B0B0;
+  --border:#2B2B2B;
+  --input-bg:#111111;
+  --hover-bg:rgba(201,162,39,0.08);
+  --idle-dot:#C4B74D;
+  --scrollbar:#5B5B5B;
+  --shadow:0 0 30px rgba(0,0,0,0.35);
+  --shadow-lg:0 0 40px rgba(0,0,0,0.5);
+  --topbar-bg:rgba(11,11,11,0.95);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{color-scheme:dark; max-width:100%; overflow-x:hidden;}
+html[data-theme="dark"]{color-scheme:dark;}
+body{
+  font-family:'Montserrat',system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+  max-width:100vw;
+  transition:background 0.25s, color 0.25s;
+}
+h1,h2,h3,h4,h5,h6{font-family:'Anton',sans-serif;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;}
+button{font-family:'Anton',sans-serif;cursor:pointer;border:none;background:none;}
+input,select,textarea{font-family:'Montserrat',system-ui,sans-serif;font-size:14px;color:var(--text);}
+input::placeholder,textarea::placeholder{color:var(--text-soft);font-family:'Montserrat',system-ui,sans-serif;font-weight:500;opacity:0.85;}
+::-webkit-scrollbar{width:8px;height:8px;}
+::-webkit-scrollbar-thumb{background:var(--scrollbar);border-radius:10px;}
+
+/* ===== LOADING ===== */
+#loading-screen,
+#entry-screen {
+  position:fixed;inset:0;
+  background:linear-gradient(180deg,#0B0B0B,#111111);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#F8F8F8;
+  z-index:9999;
+  padding:24px;
+}
+#entry-screen{display:none;}
+#loading-screen .entry-box,
+#entry-screen .entry-box{
+  width:100%;max-width:460px;
+  background:rgba(14,14,14,0.96);
+  border:1px solid rgba(201,162,39,0.18);
+  border-radius:28px;
+  box-shadow:0 28px 80px rgba(0,0,0,0.42);
+  padding:42px 34px;
+  text-align:center;
+}
+#loading-screen .logo,
+#entry-screen .entry-title{
+  font-family:'Anton',sans-serif;
+  font-size:44px;
+  font-weight:700;
+  letter-spacing:0.16em;
+  text-transform:uppercase;
+  color:var(--primary);
+  margin-bottom:12px;
+}
+#loading-screen .tag,
+#entry-screen .entry-subtitle,
+#entry-screen .entry-note{
+  font-family:'Montserrat',system-ui,sans-serif;
+  font-size:15px;
+  line-height:1.8;
+  color:#D3D3D3;
+  margin-bottom:28px;
+}
+#entry-screen .entry-note{font-size:13px;margin-top:10px;margin-bottom:0;}
+#entry-screen .entry-logo{width:84px;height:84px;object-fit:contain;margin:0 auto 22px;}
+#entry-screen .entry-input{
+  width:100%;padding:14px 16px;border-radius:18px;border:1px solid var(--border);background:var(--input-bg);color:var(--text);font-family:'Montserrat',system-ui,sans-serif;font-size:14px;font-weight:500;outline:none;margin-bottom:18px;
+}
+#entry-screen .entry-input::placeholder{color:var(--text-soft);opacity:0.85;}
+#entry-screen .entry-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(201,162,39,0.12);}
+#entry-screen .entry-actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;}
+#entry-screen .entry-button{min-width:180px;}
+#loading-screen .spinner{width:46px;height:46px;border:4px solid rgba(255,255,255,0.18);border-top-color:var(--primary);border-radius:50%;animation:spin 0.8s linear infinite;margin-top:18px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ===== LAYOUT ===== */
+#main-app{display:flex;min-height:100vh;max-width:100vw;}
+#sidebar{
+  width:260px;background:linear-gradient(180deg,#0F0F0F,#111111);color:#F8F8F8;
+  display:flex;flex-direction:column;padding:28px 18px;position:fixed;top:0;left:0;height:100vh;z-index:50;
+  border-right:1px solid rgba(255,255,255,0.06);
+}
+#sidebar .brand{display:flex;align-items:center;gap:12px;padding:0 8px 24px;border-bottom:1px solid rgba(255,255,255,0.06);margin-bottom:28px;}
+#sidebar .brand img{width:48px;height:48px;border-radius:16px;background:rgba(255,255,255,0.05);padding:8px;}
+#sidebar .brand .name{font-family:'Anton',sans-serif;font-weight:700;font-size:18px;color:#F8F8F8;letter-spacing:0.08em;text-transform:uppercase;}
+#sidebar .brand .sub{font-family:'Montserrat',system-ui,sans-serif;font-size:11px;color:var(--text-soft);letter-spacing:0.16em;text-transform:uppercase;}
+.nav-item{
+  display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:18px;color:rgba(248,248,248,0.78);
+  font-family:'Anton',sans-serif;font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;transition:all 0.18s ease;
+}
+.nav-item:hover{background:rgba(201,162,39,0.08);color:#F8F8F8;transform:translateX(1px);}
+.nav-item.active{background:var(--primary);color:var(--black);box-shadow:inset 0 0 0 1px rgba(0,0,0,0.08);}
+.nav-item .ic{width:38px;height:38px;border-radius:14px;background:rgba(201,162,39,0.14);display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--primary);}
+#sidebar .quote{margin-top:auto;font-size:12px;line-height:1.7;color:var(--text-soft);padding:14px 8px 0;border-top:1px solid rgba(255,255,255,0.06);}
+
+#sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(10,8,18,0.55);z-index:45;}
+
+#content-wrap{flex:1;margin-left:260px;display:flex;flex-direction:column;min-height:100vh;min-width:0;max-width:100%;}
+#topbar{
+  position:sticky;top:0;z-index:40;background:var(--topbar-bg);backdrop-filter:blur(12px);
+  display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 28px;border-bottom:1px solid rgba(255,255,255,0.06);
+  transition:background 0.25s, border-color 0.25s; max-width:100%;
+}
+#topbar .top-left{display:flex;align-items:center;gap:12px;}
+#topbar .top-left img{width:40px;height:40px;border-radius:14px;object-fit:contain;background:rgba(255,255,255,0.05);padding:8px;}
+#topbar .top-meta{display:flex;flex-direction:column;gap:2px;}
+#topbar .top-meta .greeting{font-family:'Anton',sans-serif;font-size:15px;font-weight:500;color:#F8F8F8;text-transform:none;letter-spacing:0.04em;}
+#topbar .top-meta .date{font-family:'Montserrat',sans-serif;font-size:14px;font-weight:500;color:var(--text-soft);text-transform:none;letter-spacing:0.02em;}
+#topbar .menu-toggle{display:none;font-size:20px;color:var(--primary);flex-shrink:0;}
+.search-wrap{position:relative;flex:1;max-width:540px;min-width:0;}
+.search-wrap input{
+  width:100%;padding:14px 18px 14px 46px;border-radius:999px;border:1px solid rgba(255,255,255,0.08);background:var(--card);
+  font-family:'Montserrat',sans-serif;font-size:14px;font-weight:500;outline:none;color:var(--text);transition:0.18s;
+}
+.search-wrap input::placeholder{color:var(--text-soft);font-family:'Montserrat',sans-serif;font-weight:500;opacity:0.8;}
+.search-wrap input:focus{border-color:var(--primary-light);box-shadow:0 0 0 3px rgba(201,162,39,0.12);}
+.search-wrap .sic{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--text-soft);font-size:16px;}
+.search-results{
+  position:absolute;top:54px;left:0;width:100%;background:var(--card);border-radius:18px;box-shadow:0 25px 45px rgba(0,0,0,0.35);
+  max-height:320px;overflow-y:auto;z-index:60;border:1px solid rgba(255,255,255,0.08);
+}
+.search-results .sr-item{padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.05);font-size:14px;display:flex;flex-direction:column;gap:4px;}
+.search-results .sr-item:hover{background:rgba(201,162,39,0.08);cursor:pointer;}
+.search-results .sr-item .nm{font-weight:700;color:#0B0B0B;}
+.search-results .sr-item .meta{color:var(--text-soft);font-size:12px;}
+.search-results .sr-empty{padding:18px;text-align:center;color:var(--text-soft);font-size:14px;}
+
+.save-indicator{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-soft);font-weight:500;white-space:nowrap;flex-shrink:0;}
+.save-indicator .dot{width:8px;height:8px;border-radius:50%;background:var(--idle-dot);flex-shrink:0;}
+.save-indicator.saving .dot{background:var(--secondary);animation:pulse 0.8s infinite;}
+.save-indicator.saved .dot{background:var(--success);}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+
+.theme-toggle{flex-shrink:0;font-size:16px;}
+
+#view-container{padding:26px 28px 100px;flex:1;max-width:100%;overflow-x:hidden;}
+.view-header{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;margin-bottom:22px;}
+.view-header h1{font-family:'Anton',sans-serif;font-size:24px;font-weight:700;color:var(--primary-dark);text-transform:uppercase;letter-spacing:0.08em;}
+.view-header p{font-family:'Montserrat',sans-serif;font-size:14px;color:var(--text-soft);margin-top:4px;font-weight:500;opacity:0.78;line-height:1.65;}
+
+/* ===== BUTTONS ===== */
+.btn{font-family:'Anton',sans-serif;display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:999px;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;transition:transform 0.18s ease,background 0.18s ease;}
+.btn:hover{transform:translateY(-1px);}
+.btn-primary{background:var(--primary);color:var(--black);}
+.btn-primary:hover{background:var(--primary-dark);}
+.btn-secondary{background:transparent;color:var(--primary);border:1.5px solid var(--primary);}
+.btn-secondary:hover{background:rgba(201,162,39,0.12);}
+.btn-outline{background:transparent;color:var(--primary);border:1.5px solid rgba(201,162,39,0.55);}
+.btn-outline:hover{background:rgba(201,162,39,0.12);}
+.btn-danger{background:rgba(106,27,27,0.14);color:var(--wine);border:1.5px solid rgba(106,27,27,0.24);}
+.btn-danger:hover{background:var(--wine);color:#fff;}
+.btn-sm{padding:8px 14px;font-size:12.5px;border-radius:22px;}
+.btn-icon{width:40px;height:40px;border-radius:14px;display:inline-flex;align-items:center;justify-content:center;background:rgba(201,162,39,0.14);color:var(--primary);flex-shrink:0;}
+.btn-icon:hover{background:var(--primary);color:var(--black);}
+.btn[disabled]{opacity:0.45;pointer-events:none;}
+
+/* ===== SECURITY CARD ===== */
+.security-card{background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);border:1px solid rgba(201,162,39,0.18);display:flex;flex-direction:column;gap:18px;}
+.security-card.safe{border-color:rgba(34,197,94,0.35);}
+.security-card.caution{border-color:rgba(234,179,8,0.35);}
+.security-card.urgent{border-color:rgba(239,68,68,0.35);}
+.security-card h3{font-family:'Anton',sans-serif;font-size:16px;margin:0;color:var(--primary);text-transform:uppercase;letter-spacing:0.06em;}
+.security-card-subtitle{font-family:'Montserrat',sans-serif;font-size:13px;color:var(--text-soft);margin-top:4px;line-height:1.6;}
+.security-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr));gap:12px;}
+.info-block{background:rgba(255,255,255,0.03);border-radius:16px;padding:14px;min-height:96px;display:flex;flex-direction:column;justify-content:space-between;}
+.info-label{font-family:'Montserrat',sans-serif;font-size:11px;color:var(--text-soft);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;}
+.info-value{font-family:'Anton',sans-serif;font-size:22px;color:var(--text);line-height:1.1;}
+.security-note{font-family:'Montserrat',sans-serif;font-size:14px;color:var(--text-soft);line-height:1.7;}
+.highlight-backup{animation:backupPulse 1.6s ease-in-out infinite;box-shadow:0 0 0 4px rgba(201,162,39,0.18);}
+@keyframes backupPulse{0%,100%{box-shadow:0 0 0 3px rgba(201,162,39,0.12);}50%{box-shadow:0 0 0 14px rgba(201,162,39,0.06);}}
+
+/* ===== CARDS / GRID ===== */
+.grid-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(170px,100%),1fr));gap:14px;margin-bottom:22px;}
+.stat-card{background:var(--card);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);position:relative;overflow:hidden;transition:background 0.25s;min-width:0;}
+.stat-card .ic{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;margin-bottom:10px;}
+.stat-card .val{font-family:'Anton',sans-serif;font-size:24px;font-weight:700;color:var(--text);}
+.stat-card .lbl{font-family:'Montserrat',system-ui,sans-serif;font-size:12px;color:var(--text-soft);margin-top:6px;font-weight:500;}
+.charts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));gap:16px;margin-bottom:20px;}
+.chart-card{background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);transition:background 0.25s;min-width:0;}
+.chart-card h3{font-family:'Anton',sans-serif;font-size:15px;margin-bottom:14px;color:var(--text);text-transform:uppercase;letter-spacing:0.06em;}
+.chart-card .chart-box{position:relative;height:230px;width:100%;}
+
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;transition:background 0.25s;}
+.empty-state{text-align:center;padding:50px 20px;color:var(--text-soft);}
+.empty-state .ic{font-size:38px;margin-bottom:10px;}
+.empty-state .t{font-family:'Montserrat',system-ui,sans-serif;font-size:16px;font-weight:600;color:var(--text);margin-bottom:10px;line-height:1.5;}
+.empty-state div{font-family:'Montserrat',system-ui,sans-serif;font-size:14px;font-weight:500;color:var(--text-soft);line-height:1.75;}
+
+/* ===== TOOLBAR / FILTERS ===== */
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px;}
+.toolbar input[type=text],.toolbar select{
+  padding:9px 14px;border-radius:24px;border:1px solid var(--border);background:var(--card);font-family:'Montserrat',sans-serif;font-size:14px;font-weight:500;outline:none;max-width:100%;
+}
+.toolbar input[type=text]{flex:1;min-width:160px;}
+.chip{padding:6px 13px;border-radius:20px;background:var(--primary-soft);color:var(--primary);font-size:12px;font-weight:600;cursor:pointer;}
+.chip.active{background:var(--primary);color:#fff;}
+
+/* ===== TABLE ===== */
+.table-wrap{overflow-x:auto;border-radius:var(--radius);max-width:100%;-webkit-overflow-scrolling:touch;}
+table{width:100%;border-collapse:collapse;background:var(--card);border-radius:var(--radius);overflow:hidden;}
+thead th{font-family:'Anton',sans-serif;background:rgba(201,162,39,0.15);color:var(--primary);text-align:left;padding:13px 16px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;white-space:nowrap;}
+tbody td{font-family:'Montserrat',sans-serif;padding:14px 16px;font-size:14px;border-bottom:1px solid var(--border);vertical-align:middle;}
+tbody tr:hover{background:var(--hover-bg);}
+tbody tr:last-child td{border-bottom:none;}
+.row-actions{display:flex;gap:6px;}
+
+/* ===== PARTICIPANT CARDS (mobile-friendly list) ===== */
+.p-list{display:flex;flex-direction:column;gap:10px;}
+.p-row{background:var(--card);border-radius:14px;box-shadow:var(--shadow);padding:14px 16px;display:flex;align-items:center;gap:14px;transition:background 0.25s;max-width:100%;}
+.avatar{width:42px;height:42px;border-radius:50%;background:var(--primary-soft);color:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex-shrink:0;}
+.p-row .info{flex:1;min-width:0;overflow:hidden;}
+.p-row .nm{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.p-row .meta{font-size:12px;color:var(--text-soft);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.p-row .badge{flex-shrink:0;}
+.badge{display:inline-flex;align-items:center;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;}
+.badge-visitante{background:var(--info-soft);color:var(--info-text);}
+.badge-em_acompanhamento{background:var(--secondary-soft);color:var(--secondary-text);}
+.badge-integrado{background:var(--primary-soft);color:var(--primary);}
+.badge-servo{background:var(--success-soft);color:var(--success-text);}
+.badge-lider{background:var(--warn-soft);color:var(--warn-text);}
+
+/* ===== MODAL ===== */
+#modal-root{position:fixed;inset:0;z-index:200;display:none;}
+.modal-overlay{position:absolute;inset:0;background:rgba(10,8,18,0.6);display:flex;align-items:center;justify-content:center;padding:16px;}
+.modal-box{background:var(--card);border-radius:22px;max-width:560px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-lg);}
+.modal-head{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--card);border-radius:22px 22px 0 0;}
+.modal-head h2{font-family:'Anton',sans-serif;font-size:17px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;}
+.modal-body{padding:22px 24px;}
+.modal-foot{display:flex;justify-content:flex-end;gap:10px;padding:16px 24px;border-top:1px solid var(--border);flex-wrap:wrap;}
+.close-x{font-size:20px;color:var(--text-soft);width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.close-x:hover{background:var(--bg);}
+
+/* ===== FORM ===== */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-grid .full{grid-column:1/-1;}
+.f-group{min-width:0;}
+.f-group label{display:block;font-family:'Montserrat',system-ui,sans-serif;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:8px;letter-spacing:0.02em;text-transform:none;}
+.f-group input[type=text],.f-group input[type=date],.f-group input[type=tel],.f-group select,.f-group textarea{
+  width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);outline:none;font-family:'Montserrat',system-ui,sans-serif;font-size:14px;font-weight:500;transition:0.15s;background:var(--input-bg);color:var(--text);
+}
+.f-group input[type=text]::placeholder,.f-group input[type=tel]::placeholder,.f-group textarea::placeholder,.f-group select::placeholder{font-family:'Montserrat',system-ui,sans-serif;font-weight:500;color:var(--text-soft);opacity:0.8;}
+.f-group input:focus,.f-group select:focus,.f-group textarea:focus{border-color:var(--primary-light);background:var(--card);}
+.f-group textarea{resize:vertical;min-height:60px;}
+.radio-group,.check-group{display:flex;flex-wrap:wrap;gap:8px;}
+.radio-pill,.check-pill{padding:8px 14px;border-radius:20px;border:1.5px solid var(--border);font-family:'Montserrat',system-ui,sans-serif;font-size:13px;font-weight:500;cursor:pointer;color:var(--text-soft);background:var(--input-bg);}
+.radio-pill.sel,.check-pill.sel{background:var(--primary);color:#fff;border-color:var(--primary);}
+@media(max-width:560px){.form-grid{grid-template-columns:1fr;}}
+
+/* ===== STATUS STEPPER ===== */
+.stepper{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0;}
+.step-pill{flex:1;min-width:90px;text-align:center;padding:9px 6px;border-radius:11px;font-size:11.5px;font-weight:700;background:var(--bg);color:var(--text-soft);cursor:pointer;border:1.5px solid var(--border);}
+.step-pill.current{background:var(--primary);color:#fff;border-color:var(--primary);}
+.history-line{font-size:11.5px;color:var(--text-soft);margin-top:10px;line-height:1.7;}
+
+/* ===== TOAST ===== */
+#toast-root{position:fixed;bottom:20px;right:20px;left:20px;z-index:300;display:flex;flex-direction:column;align-items:flex-end;gap:8px;pointer-events:none;}
+.toast{background:#2A2438;color:#fff;padding:12px 18px;border-radius:12px;font-size:13px;box-shadow:var(--shadow-lg);animation:toastIn 0.25s ease;max-width:90vw;}
+@keyframes toastIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* ===== BOTTOM NAV (mobile) ===== */
+#bottom-nav{display:none;}
+
+/* ===== REPORT TABS ===== */
+.report-tabs{display:flex;gap:8px;overflow-x:auto;margin-bottom:16px;padding-bottom:4px;-webkit-overflow-scrolling:touch;}
+.report-tab{padding:9px 16px;border-radius:20px;background:var(--card);border:1.5px solid var(--border);font-size:12.5px;font-weight:700;color:var(--text-soft);white-space:nowrap;flex-shrink:0;}
+.report-tab.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+  #sidebar{display:none;}
+  #content-wrap{margin-left:0;}
+  #topbar .menu-toggle{display:block;}
+  #topbar{padding:12px 16px;gap:10px;}
+  #view-container{padding:18px 16px 90px;}
+  #bottom-nav{
+    display:flex;position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);
+    z-index:80;justify-content:space-around;padding:8px 4px;box-shadow:0 -4px 20px rgba(0,0,0,0.06);
+    padding-bottom:calc(8px + env(safe-area-inset-bottom));
+  }
+  #bottom-nav .bn-item{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;color:var(--text-soft);font-weight:600;padding:4px 6px;flex:1;}
+  #bottom-nav .bn-item.active{color:var(--primary);}
+  #bottom-nav .bn-item .ic{font-size:17px;}
+  .search-wrap{max-width:none;}
+  #sidebar.mobile-open{display:flex;}
+  #sidebar.mobile-open + #sidebar-backdrop{display:block;}
+}
+@media(max-width:480px){
+  #topbar{padding:10px 14px;gap:8px;}
+  #save-text{display:none;}
+  .view-header h1{font-size:20px;}
+  .modal-body{padding:16px 18px;}
+  .modal-head{padding:16px 18px;}
+  .modal-foot{padding:14px 18px;}
+}
+</style>
+</head>
+<body>
+
+<div id="loading-screen">
+  <div class="logo">SON CELL</div>
+  <div class="tag">Cada presença importa. Cada jovem possui uma história.</div>
+  <div class="spinner"></div>
+</div>
+
+<div id="entry-screen">
+  <div class="entry-box">
+    <img src="fragmentados.png" alt="Brasão SON" class="entry-logo">
+    <div class="entry-title">SON CELL</div>
+    <div class="entry-subtitle">Sistema de Credenciamento SON.</div>
+    <input id="entry-name" class="entry-input" type="text" placeholder="Nome do responsável" autocomplete="off">
+    <div class="entry-actions">
+      <button class="btn btn-primary entry-button" data-action="enter-system">ENTRAR</button>
+    </div>
+    <div class="entry-note">"Sede santos, porque Eu sou Santo"</div>
+  </div>
+</div>
+
+<div id="main-app" style="display:none">
+  <aside id="sidebar">
+    <div class="brand">
+     <img
+src="fragmentados.png"
+style="
+width:48px;
+height:48px;
+object-fit:contain;
+border-radius:12px;
+"/>
+      <div>
+        <div class="name">SON Cell</div>
+        <div class="sub">GESTÃO DE CÉLULAS</div>
+      </div>
+    </div>
+    <div id="nav-list"></div>
+    <div class="quote">"Cada presença importa. Cada jovem possui uma história. Cada vida merece acompanhamento."</div>
+  </aside>
+  <div id="sidebar-backdrop" data-action="toggle-sidebar"></div>
+
+  <div id="content-wrap">
+    <header id="topbar">
+      <div class="top-left">
+        <img src="fragmentados.png" alt="Brasão SON">
+        <div class="top-meta">
+          <div class="greeting">Olá, <span id="greeting-name">Responsável</span></div>
+          <div class="date" id="topbar-date"></div>
+        </div>
+      </div>
+      <div class="search-wrap">
+        <span class="sic">🔍</span>
+        <input type="text" id="global-search" placeholder="Buscar por nome, telefone, bairro, status...">
+        <div class="search-results" id="search-results" style="display:none"></div>
+      </div>
+      <button class="btn-icon theme-toggle" id="theme-toggle-btn" data-action="toggle-theme" title="Alternar tema claro/escuro">🌙</button>
+      <div class="save-indicator" id="save-indicator"><span class="dot"></span><span id="save-text">Tudo salvo</span></div>
+    </header>
+    <main id="view-container"></main>
+  </div>
+
+  <nav id="bottom-nav"></nav>
+</div>
+
+<div id="modal-root"><div class="modal-overlay" id="modal-overlay"><div class="modal-box" id="modal-box"></div></div></div>
+<div id="toast-root"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<script>
+/* ============================================================
+   SON CELL — ESTADO
+============================================================ */
+const DB = { participantes:[], eventos:[], presencas:[] };
+let currentView = 'dashboard';
+let currentTheme = 'dark';
+let charts = {};
+let userName = '';
+let lastBackupAt = null;
+let highlightBackupButton = false;
+const STORAGE_SHARED = true; // dados compartilhados entre toda a liderança que usar este link
+const RESPONSAVEL_STORAGE_KEY = 'soncell:responsavel';
+
+const NAV_ITEMS = [
+  {id:'dashboard', label:'Dashboard', ic:'📊'},
+  {id:'participantes', label:'Participantes', ic:'👥'},
+  {id:'presenca', label:'Presença', ic:'✅'},
+  {id:'eventos', label:'Eventos', ic:'📅'},
+  {id:'relatorios', label:'Relatórios', ic:'📈'},
+  {id:'backup', label:'Backup', ic:'💾'},
+];
+
+const INTERESSE_OPCOES = ['Música','Intercessão','Mídia','Acolhida','Liturgia','Formação','Eventos','Organização','Comunicação','Coordenação','CAJ','Outro'];
+const ORIGEM_OPCOES = ['Instagram','TikTok','Amigo','Igreja','Evento','WhatsApp','Outro'];
+const STATUS_LIST = [
+  {key:'visitante', label:'Visitante'},
+  {key:'em_acompanhamento', label:'Em acompanhamento'},
+  {key:'integrado', label:'Integrado ao SON'},
+  {key:'servo', label:'Servo'},
+  {key:'lider', label:'Líder'},
+];
+
+/* ============================================================
+   TEMA (CLARO / ESCURO)
+============================================================ */
+async function loadTheme(){
+  try{
+    const r = await window.storage.get('soncell:theme', false);
+    currentTheme = (r && r.value) ? r.value : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  }catch(e){
+    currentTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  applyTheme();
+}
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme', currentTheme);
+  document.documentElement.style.colorScheme = currentTheme;
+  const btn = document.getElementById('theme-toggle-btn');
+  if(btn) btn.textContent = currentTheme==='dark' ? '☀️' : '🌙';
+}
+function toggleTheme(){
+  currentTheme = currentTheme==='dark' ? 'light' : 'dark';
+  applyTheme();
+  window.storage.set('soncell:theme', currentTheme, false).catch(()=>{});
+  if(currentView==='dashboard') setTimeout(renderCharts, 30);
+}
+function loadResponsavel(){
+  try{ userName = localStorage.getItem(RESPONSAVEL_STORAGE_KEY) || ''; }
+  catch(e){ userName = ''; }
+}
+function formatName(name){
+  return String(name).trim().toLowerCase().split(/\s+/).map(word=>word.charAt(0).toUpperCase()+word.slice(1)).join(' ');
+}
+function capitalizeSentence(value){
+  return value ? value.charAt(0).toUpperCase()+value.slice(1) : value;
+}
+function updateTopbarInfo(){
+  const nameEl = document.getElementById('greeting-name');
+  const dateEl = document.getElementById('topbar-date');
+  if(nameEl) nameEl.textContent = userName ? formatName(userName) : 'Responsável';
+  if(dateEl) dateEl.textContent = capitalizeSentence(new Date().toLocaleDateString('pt-BR', { weekday:'long', day:'2-digit', month:'long', year:'numeric' }));
+}
+function enterSystem(){
+  const input = document.getElementById('entry-name');
+  if(!input) return;
+  const value = input.value.trim();
+  if(!value){ toast('Informe o nome do responsável para continuar.'); return; }
+  userName = value;
+  try{ localStorage.setItem(RESPONSAVEL_STORAGE_KEY, userName); }catch(e){}
+  document.getElementById('entry-screen').style.display = 'none';
+  document.getElementById('main-app').style.display = 'flex';
+  updateTopbarInfo();
+  buildNav();
+  render();
+}
+
+/* ============================================================
+   UTILS
+============================================================ */
+function uid(){ return (crypto.randomUUID ? crypto.randomUUID() : 'id-'+Date.now()+'-'+Math.random().toString(16).slice(2)); }
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+function fmtDate(iso){ if(!iso) return '—'; const d=new Date(iso+'T00:00:00'); if(isNaN(d)) return '—'; return d.toLocaleDateString('pt-BR'); }
+function calcIdade(dataNasc){
+  if(!dataNasc) return null;
+  const hoje=new Date(), nasc=new Date(dataNasc+'T00:00:00');
+  if(isNaN(nasc)) return null;
+  let idade=hoje.getFullYear()-nasc.getFullYear();
+  const m=hoje.getMonth()-nasc.getMonth();
+  if(m<0||(m===0&&hoje.getDate()<nasc.getDate())) idade--;
+  return idade;
+}
+function tempoEm(iso){
+  if(!iso) return '—';
+  const inicio = new Date(iso+'T00:00:00');
+  if(isNaN(inicio)) return '—';
+  const hoje = new Date();
+  let anos = hoje.getFullYear() - inicio.getFullYear();
+  let meses = hoje.getMonth() - inicio.getMonth();
+  if(hoje.getDate() < inicio.getDate()) meses--;
+  if(meses < 0){ anos--; meses += 12; }
+  const partes = [];
+  if(anos>0) partes.push(`${anos} ano${anos>1?'s':''}`);
+  if(meses>0) partes.push(`${meses} mês${meses>1?'es':''}`);
+  return partes.length?partes.join(' e '):'menos de 1 mês';
+}
+function faixaEtaria(idade){
+  if(idade===null) return 'Não informado';
+  if(idade<=14) return '12 a 14 anos';
+  if(idade<=17) return '15 a 17 anos';
+  if(idade<=21) return '18 a 21 anos';
+  if(idade<=25) return '22 a 25 anos';
+  return '26+';
+}
+function daysSince(iso){ if(!iso) return null; const diff = Date.now()-new Date(iso).getTime(); return Math.floor(diff/86400000); }
+function escapeHtml(s){ if(s===undefined||s===null) return ''; return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function debounce(fn, ms){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), ms); }; }
+
+function toast(msg){
+  const root=document.getElementById('toast-root');
+  const el=document.createElement('div');
+  el.className='toast'; el.textContent=msg;
+  root.appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transition='opacity .3s'; setTimeout(()=>el.remove(),300); }, 2600);
+}
+
+/* ============================================================
+   STORAGE (window.storage) — autosave sem botão de salvar
+============================================================ */
+function setSaveStatus(state){
+  const ind=document.getElementById('save-indicator');
+  const txt=document.getElementById('save-text');
+  if(!ind) return;
+  ind.classList.remove('saving','saved');
+  if(state==='saving'){ ind.classList.add('saving'); txt.textContent='Salvando...'; }
+  else if(state==='saved'){ ind.classList.add('saved'); txt.textContent='Dados salvos automaticamente'; setTimeout(()=>{ if(txt.textContent==='Dados salvos automaticamente'){ txt.textContent='Tudo salvo'; ind.classList.remove('saved'); } },2200); }
+}
+
+const _save = debounce(async (key)=>{
+  setSaveStatus('saving');
+  try{
+    await window.storage.set('soncell:'+key, JSON.stringify(DB[key]), STORAGE_SHARED);
+    setSaveStatus('saved');
+  }catch(e){ console.error('Erro ao salvar', key, e); toast('Erro ao salvar dados. Tente novamente.'); }
+}, 500);
+
+function persist(key){ _save(key); }
+
+async function loadAll(){
+  for(const key of ['participantes','eventos','presencas']){
+    try{
+      const r = await window.storage.get('soncell:'+key, STORAGE_SHARED);
+      DB[key] = r && r.value ? JSON.parse(r.value) : [];
+    }catch(e){ DB[key] = []; }
+  }
+  await loadBackupMeta();
+}
+
+async function loadBackupMeta(){
+  try{
+    const r = await window.storage.get('soncell:last_backup', false);
+    lastBackupAt = r && r.value ? r.value : null;
+  }catch(e){ lastBackupAt = null; }
+}
+function backupAgeDays(){
+  if(!lastBackupAt) return null;
+  const diff = Date.now() - new Date(lastBackupAt).getTime();
+  if(isNaN(diff)) return null;
+  return Math.floor(diff / 86400000);
+}
+function getBackupDisplayText(){
+  if(!lastBackupAt) return '⚠️ Nenhum backup foi realizado ainda.';
+  const dt = new Date(lastBackupAt);
+  if(isNaN(dt)) return '⚠️ Nenhum backup foi realizado ainda.';
+  return `Último backup: ${dt.toLocaleDateString('pt-BR')} às ${dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`;
+}
+function getBackupStatusClass(){
+  const days = backupAgeDays();
+  if(days===null) return 'urgent';
+  if(days>30) return 'urgent';
+  if(days>7) return 'caution';
+  return 'safe';
+}
+function getBackupStatusMessage(){
+  const days = backupAgeDays();
+  if(days===null) return '⚠️ Nenhum backup foi realizado ainda. Faça um backup completo agora para proteger seus dados.';
+  if(days>30) return '⚠️ Seu último backup foi realizado há mais de 30 dias. Recomendamos gerar um novo backup imediatamente.';
+  if(days>7) return '⚠️ Seu último backup foi realizado há mais de 7 dias. Recomendamos gerar um novo backup em breve.';
+  return 'Backup recente. Continue mantendo seus dados seguros.';
+}
+function requestBackupNow(){
+  highlightBackupButton = true;
+  navigateTo('backup');
+  setTimeout(()=>{ highlightBackupButton = false; render(); }, 2400);
+}
+let exitConfirmed = false;
+function continueExit(){
+  exitConfirmed = true;
+  closeModal();
+  setTimeout(()=> exitConfirmed = false, 1000);
+}
+function openExitWarningModal(){
+  openModal({
+    title:'⚠️ Atenção',
+    body:`<p style="font-family:'Montserrat',sans-serif;font-size:15px;font-weight:600;color:var(--text);margin-bottom:14px">Você está prestes a sair ou atualizar o SON Cell.</p>
+      <p style="font-family:'Montserrat',sans-serif;font-size:14px;color:var(--text-soft);line-height:1.7;margin-bottom:18px">Os dados são armazenados localmente neste dispositivo. Embora o sistema realize salvamento automático, é altamente recomendado manter um backup atualizado para evitar perda de informações.</p>
+      <div style="padding:16px;border-radius:18px;border:1px solid rgba(201,162,39,0.24);background:rgba(201,162,39,0.08);font-family:'Montserrat',sans-serif;font-size:14px;color:var(--text);line-height:1.7;">${getBackupDisplayText()}</div>`,
+    foot:`<button class="btn btn-primary" data-action="request-backup">Fazer Backup Agora</button><button class="btn btn-outline" data-action="continue-exit">Continuar Mesmo Assim</button><button class="btn btn-secondary" data-action="close-modal">Cancelar</button>`
+  });
+}
+window.addEventListener('beforeunload', (e)=>{
+  if(!exitConfirmed){
+    const message='⚠️ Atenção\nVocê está prestes a sair ou atualizar o SON Cell.\nOs dados são armazenados localmente neste dispositivo.\nEmbora o sistema realize salvamento automático, é altamente recomendado manter um backup atualizado para evitar perda de informações.';
+    e.preventDefault();
+    e.returnValue = message;
+    return message;
+  }
+});
+window.addEventListener('keydown', (e)=>{
+  if((e.key==='F5' || (e.key==='r' && (e.ctrlKey || e.metaKey))) && !exitConfirmed){
+    e.preventDefault();
+    openExitWarningModal();
+  }
+});
+
+/* ============================================================
+   NAVEGAÇÃO
+============================================================ */
+function buildNav(){
+  const list=document.getElementById('nav-list');
+  list.innerHTML = NAV_ITEMS.map(n=>`<div class="nav-item ${n.id===currentView?'active':''}" data-action="nav" data-view="${n.id}"><span class="ic">${n.ic}</span>${n.label}</div>`).join('');
+  const bn=document.getElementById('bottom-nav');
+  bn.innerHTML = NAV_ITEMS.map(n=>`<div class="bn-item ${n.id===currentView?'active':''}" data-action="nav" data-view="${n.id}"><span class="ic">${n.ic}</span>${n.label}</div>`).join('');
+}
+function navigateTo(view){
+  currentView=view;
+  document.getElementById('sidebar').classList.remove('mobile-open');
+  buildNav();
+  render();
+}
+function render(){
+  const c=document.getElementById('view-container');
+  if(currentView==='dashboard') c.innerHTML = viewDashboard();
+  else if(currentView==='participantes') c.innerHTML = viewParticipantes();
+  else if(currentView==='presenca') c.innerHTML = viewPresenca();
+  else if(currentView==='eventos') c.innerHTML = viewEventos();
+  else if(currentView==='relatorios') c.innerHTML = viewRelatorios();
+  else if(currentView==='backup') c.innerHTML = viewBackup();
+  if(currentView==='dashboard') setTimeout(renderCharts, 30);
+}
+
+/* ============================================================
+   DASHBOARD
+============================================================ */
+function getUltimoEvento(){
+  const hoje=todayISO();
+  const passados = DB.eventos.filter(e=>e.data<=hoje).sort((a,b)=>b.data.localeCompare(a.data));
+  return passados[0] || null;
+}
+function viewDashboard(){
+  const total = DB.participantes.length;
+  const ultimoEvento = getUltimoEvento();
+  const presentesUltimo = ultimoEvento ? new Set(DB.presencas.filter(p=>p.eventoId===ultimoEvento.id).map(p=>p.participanteId)).size : 0;
+  const visitantes = DB.participantes.filter(p=>p.status==='visitante').length;
+  const foraWpp = DB.participantes.filter(p=>p.noWhatsapp==='nao').length;
+  const caj = DB.participantes.filter(p=>p.caj==='sim').length;
+
+  const mesAtual = todayISO().slice(0,7);
+  const mesAnteriorD = new Date(); mesAnteriorD.setMonth(mesAnteriorD.getMonth()-1);
+  const mesAnterior = mesAnteriorD.toISOString().slice(0,7);
+  const novosMesAtual = DB.participantes.filter(p=>p.criadoEm && p.criadoEm.slice(0,7)===mesAtual).length;
+  const novosMesAnterior = DB.participantes.filter(p=>p.criadoEm && p.criadoEm.slice(0,7)===mesAnterior).length;
+  let crescimento = '—';
+  if(novosMesAnterior>0) crescimento = (((novosMesAtual-novosMesAnterior)/novosMesAnterior)*100).toFixed(0)+'%';
+  else if(novosMesAtual>0) crescimento = '+'+novosMesAtual;
+
+  const comPresenca = DB.participantes.filter(p=> DB.presencas.some(pr=>pr.participanteId===p.id));
+  const retornaram = comPresenca.filter(p=> DB.presencas.filter(pr=>pr.participanteId===p.id).length>1).length;
+  const retencao = comPresenca.length>0 ? Math.round((retornaram/comPresenca.length)*100)+'%' : '—';
+
+  const servos = DB.participantes.filter(p=>p.funcaoSON==='Servo').length;
+  const lideres = DB.participantes.filter(p=>p.funcaoSON==='Líder').length;
+  const coordenadores = DB.participantes.filter(p=>p.funcaoSON==='Coordenador').length;
+  const musica = DB.participantes.filter(p=>(p.areasAtuacao||[]).includes('Música')).length;
+  const midia = DB.participantes.filter(p=>(p.areasAtuacao||[]).includes('Mídia')).length;
+  const intercessao = DB.participantes.filter(p=>(p.areasAtuacao||[]).includes('Intercessão')).length;
+  const acolhida = DB.participantes.filter(p=>(p.areasAtuacao||[]).includes('Acolhida')).length;
+  const stats = [
+    {ic:'👥',bg:'var(--primary-soft)',color:'var(--primary)',val:total,lbl:'Participantes'},
+    {ic:'🙌',bg:'var(--info-soft)',color:'var(--info-text)',val:servos,lbl:'Servos'},
+    {ic:'⭐',bg:'var(--secondary-soft)',color:'var(--secondary-text)',val:lideres,lbl:'Líderes'},
+    {ic:'👑',bg:'var(--warn-soft)',color:'var(--warn-text)',val:coordenadores,lbl:'Coordenadores'},
+    {ic:'🎵',bg:'var(--success-soft)',color:'var(--success-text)',val:musica,lbl:'Música'},
+    {ic:'📸',bg:'var(--primary-soft)',color:'var(--primary)',val:midia,lbl:'Mídia'},
+    {ic:'🙏',bg:'var(--info-soft)',color:'var(--info-text)',val:intercessao,lbl:'Intercessão'},
+    {ic:'🤝',bg:'var(--secondary-soft)',color:'var(--secondary-text)',val:acolhida,lbl:'Acolhida'},
+  ];
+
+  const backupClass = getBackupStatusClass();
+  const backupStatusMessage = getBackupStatusMessage();
+  const backupText = getBackupDisplayText();
+  return `
+  <div class="view-header"><div><h1>Dashboard</h1><p>Visão geral em tempo real da comunidade SON</p></div></div>
+  <div class="security-card ${backupClass}">
+    <div>
+      <h3>🛡️ Segurança dos Dados</h3>
+      <p class="security-card-subtitle">Proteja participantes, eventos e presenças com backups regulares.</p>
+    </div>
+    <div class="security-grid">
+      <div class="info-block"><div class="info-label">Total de participantes</div><div class="info-value">${total}</div></div>
+      <div class="info-block"><div class="info-label">Total de eventos</div><div class="info-value">${DB.eventos.length}</div></div>
+      <div class="info-block"><div class="info-label">Total de presenças</div><div class="info-value">${DB.presencas.length}</div></div>
+      <div class="info-block"><div class="info-label">Último backup</div><div class="info-value">${lastBackupAt ? new Date(lastBackupAt).toLocaleDateString('pt-BR') : '—'}</div></div>
+    </div>
+    <div class="security-note">${backupStatusMessage}</div>
+    <button class="btn btn-primary ${highlightBackupButton?'highlight-backup':''}" data-action="request-backup">Baixar Backup Agora</button>
+  </div>
+  <div class="grid-stats">
+    ${stats.map(s=>`<div class="stat-card"><div class="ic" style="background:${s.bg};color:${s.color}">${s.ic}</div><div class="val">${s.val}</div><div class="lbl">${s.lbl}</div></div>`).join('')}
+  </div>
+  <div class="charts-grid">
+    <div class="chart-card"><h3>Faixa Etária</h3><div class="chart-box"><canvas id="chart-idade"></canvas></div></div>
+    <div class="chart-card"><h3>Origem dos Participantes</h3><div class="chart-box"><canvas id="chart-origem"></canvas></div></div>
+    <div class="chart-card" style="grid-column:1/-1"><h3>Evolução Mensal (últimos 6 meses)</h3><div class="chart-box"><canvas id="chart-evolucao"></canvas></div></div>
+  </div>
+  `;
+}
+function chartColors(){
+  const cs = getComputedStyle(document.documentElement);
+  const v = (name)=> cs.getPropertyValue(name).trim();
+  return { text:v('--text-soft'), grid:v('--border'), primary:v('--primary'), primaryLight:v('--primary-light'), secondary:v('--secondary'), card:v('--card'), info:v('--info-text'), success:v('--success-text') };
+}
+function renderCharts(){
+  Object.values(charts).forEach(c=>c && c.destroy());
+  if(!window.Chart) return;
+  const cc = chartColors();
+  Chart.defaults.color = cc.text;
+  Chart.defaults.borderColor = cc.grid;
+  Chart.defaults.font.family = "'Montserrat', sans-serif";
+
+  // Faixa etária
+  const buckets = ['12 a 14 anos','15 a 17 anos','18 a 21 anos','22 a 25 anos','26+'];
+  const counts = buckets.map(b=> DB.participantes.filter(p=>faixaEtaria(calcIdade(p.dataNascimento))===b).length);
+  charts.idade = new Chart(document.getElementById('chart-idade'), {
+    type:'bar',
+    data:{ labels:buckets, datasets:[{ data:counts, backgroundColor:cc.primary, borderRadius:8, maxBarThickness:38 }] },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ y:{beginAtZero:true, ticks:{precision:0, color:cc.text}, grid:{color:cc.grid}}, x:{grid:{display:false}, ticks:{color:cc.text}} } }
+  });
+
+  // Origem
+  const palette = [cc.primary, cc.primaryLight, '#C4B5FD', cc.secondary, '#FDE68A', '#FB923C', '#34D399'];
+  const origemCounts = ORIGEM_OPCOES.map(o=> DB.participantes.filter(p=>p.comoConheceu===o).length);
+  charts.origem = new Chart(document.getElementById('chart-origem'), {
+    type:'doughnut',
+    data:{ labels:ORIGEM_OPCOES, datasets:[{ data:origemCounts, backgroundColor:palette, borderColor:cc.card, borderWidth:2 }] },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom', labels:{boxWidth:10, font:{size:10}, color:cc.text}}} }
+  });
+
+  // Evolução mensal — últimos 6 meses
+  const meses=[]; for(let i=5;i>=0;i--){ const d=new Date(); d.setMonth(d.getMonth()-i); meses.push(d.toISOString().slice(0,7)); }
+  const mesLabel = m => { const [y,mm]=m.split('-'); return ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][parseInt(mm)-1]+'/'+y.slice(2); };
+  const novos = meses.map(m=> DB.participantes.filter(p=>p.criadoEm && p.criadoEm.slice(0,7)===m).length);
+  const visit = meses.map(m=> DB.participantes.filter(p=>p.criadoEm && p.criadoEm.slice(0,7)===m && p.status==='visitante').length);
+  const pres = meses.map(m=> DB.presencas.filter(p=>p.data && p.data.slice(0,7)===m).length);
+  charts.evolucao = new Chart(document.getElementById('chart-evolucao'), {
+    type:'line',
+    data:{ labels: meses.map(mesLabel), datasets:[
+      { label:'Novos participantes', data:novos, borderColor:cc.primary, backgroundColor:cc.primary+'22', tension:0.35, fill:true },
+      { label:'Visitantes', data:visit, borderColor:cc.info, backgroundColor:cc.info+'18', tension:0.35, fill:true },
+      { label:'Presenças registradas', data:pres, borderColor:cc.secondary, backgroundColor:cc.secondary+'22', tension:0.35, fill:true },
+    ]},
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom', labels:{boxWidth:10, font:{size:11}, color:cc.text}}}, scales:{ y:{beginAtZero:true, ticks:{precision:0, color:cc.text}, grid:{color:cc.grid}}, x:{ticks:{color:cc.text}, grid:{color:cc.grid}} } }
+  });
+}
+
+/* ============================================================
+   PARTICIPANTES
+============================================================ */
+let pFilterStatus='todos', pFilterText='';
+function viewParticipantes(){
+  const filtered = DB.participantes.filter(p=>{
+    if(pFilterStatus!=='todos' && p.status!==pFilterStatus) return false;
+    if(pFilterText){
+      const t=pFilterText.toLowerCase();
+      return [p.nome,p.telefone,p.bairro].some(v=>v && v.toLowerCase().includes(t));
+    }
+    return true;
+  }).sort((a,b)=> (b.criadoEm||'').localeCompare(a.criadoEm||''));
+
+  return `
+  <div class="view-header">
+    <div><h1>Participantes</h1><p>${DB.participantes.length} cadastrados no total</p></div>
+    <button class="btn btn-primary" data-action="open-participant-form"><span>＋</span> Novo participante</button>
+  </div>
+  <div class="toolbar">
+    <input type="text" placeholder="Buscar nome, telefone ou bairro..." value="${escapeHtml(pFilterText)}" oninput="pFilterText=this.value; render();">
+    <select onchange="pFilterStatus=this.value; render();">
+      <option value="todos">Todos os status</option>
+      ${STATUS_LIST.map(s=>`<option value="${s.key}" ${pFilterStatus===s.key?'selected':''}>${s.label}</option>`).join('')}
+    </select>
+  </div>
+  ${filtered.length===0 ? `<div class="empty-state card"><div class="ic">👋</div><div class="t">Nenhum participante encontrado</div><div>Cadastre o primeiro participante da célula para começar o acompanhamento.</div></div>` : `
+  <div class="p-list">
+    ${filtered.map(p=>{
+      const idade=calcIdade(p.dataNascimento);
+      return `<div class="p-row" data-action="edit-participant" data-id="${p.id}">
+        <div class="avatar">${escapeHtml((p.nome||'?').charAt(0).toUpperCase())}</div>
+        <div class="info">
+          <div class="nm">${escapeHtml(p.nome||'(sem nome)')}</div>
+          <div class="meta">${idade!==null?idade+' anos · ':''}${escapeHtml(p.funcaoSON||'Participante')} · ${escapeHtml(p.cargo||'Sem cargo')}${(p.areasAtuacao||[]).length?` · ${escapeHtml((p.areasAtuacao||[]).slice(0,2).join(', '))}`:''} · ${escapeHtml(p.telefone||'sem telefone')}</div>
+        </div>
+        <span class="badge badge-${p.status}">${STATUS_LIST.find(s=>s.key===p.status)?.label || p.status}</span>
+      </div>`;
+    }).join('')}
+  </div>`}
+  `;
+}
+
+function participantFormHTML(p){
+  p = p || { id:null, nome:'',dataNascimento:'',telefone:'',bairro:'',instagram:'',jaParticipouCelula:'',fazParteGrupoSON:'',noWhatsapp:'',caj:'',funcaoSON:'Participante',areasAtuacao:[],cargo:'',dataEntradaSON:'',dataInicioFuncao:'',interesseServir:[],comoConheceu:'',quemConvidou:'',observacoes:'',status:'visitante',statusHistorico:[],criadoEm:'' };
+  const idade = calcIdade(p.dataNascimento);
+  const radioGroup=(name,opts,val)=> opts.map(o=>`<div class="radio-pill ${val===o.v?'sel':''}" data-radio="${name}" data-val="${o.v}">${o.l}</div>`).join('');
+  const checkGroup=(name,arr)=> INTERESSE_OPCOES.map(o=>`<div class="check-pill ${arr.includes(o)?'sel':''}" data-check="${name}" data-val="${escapeHtml(o)}">${o}</div>`).join('');
+
+  return `
+  <form id="participant-form" data-id="${p.id||''}">
+    <div class="form-grid">
+      <div class="f-group full"><label>Nome completo *</label><input type="text" name="nome" required value="${escapeHtml(p.nome)}"></div>
+      <div class="f-group"><label>Data de nascimento</label><input type="date" name="dataNascimento" id="f-dataNasc" value="${p.dataNascimento||''}"></div>
+      <div class="f-group"><label>Idade</label><input type="text" disabled id="f-idade" value="${idade!==null?idade+' anos':''}" style="background:var(--bg);color:var(--text-soft)"></div>
+      <div class="f-group"><label>Telefone / WhatsApp *</label><input type="tel" name="telefone" required value="${escapeHtml(p.telefone)}" placeholder="(00) 00000-0000"></div>
+      <div class="f-group"><label>Bairro</label><input type="text" name="bairro" value="${escapeHtml(p.bairro)}"></div>
+      <div class="f-group full"><label>Instagram</label><input type="text" name="instagram" value="${escapeHtml(p.instagram)}" placeholder="@usuario"></div>
+
+      <div class="f-group full"><label>Já participou de alguma Célula?</label><div class="radio-group">${radioGroup('jaParticipouCelula',[{v:'sim',l:'Sim'},{v:'nao',l:'Não'}],p.jaParticipouCelula)}</div></div>
+      <div class="f-group full"><label>Faz parte do Grupo SON?</label><div class="radio-group">${radioGroup('fazParteGrupoSON',[{v:'sim',l:'Sim'},{v:'nao',l:'Não'}],p.fazParteGrupoSON)}</div></div>
+      <div class="f-group full"><label>Está no Grupo de WhatsApp?</label><div class="radio-group">${radioGroup('noWhatsapp',[{v:'sim',l:'Sim'},{v:'nao',l:'Não'}],p.noWhatsapp)}</div></div>
+      <div class="f-group full"><label>Vai participar do CAJ?</label><div class="radio-group">${radioGroup('caj',[{v:'sim',l:'Sim'},{v:'nao',l:'Não'},{v:'ainda_nao_sei',l:'Ainda não sei'}],p.caj)}</div></div>
+
+      <div class="f-group"><label>Função no SON</label><select name="funcaoSON">${['Participante','Visitante','Servo','Líder','Coordenador','Fundador','Apoio'].map(o=>`<option value="${o}" ${p.funcaoSON===o?'selected':''}>${o}</option>`).join('')}</select></div>
+      <div class="f-group"><label>Cargo Atual</label><input type="text" name="cargo" value="${escapeHtml(p.cargo)}" placeholder="Ex: Líder da Célula"></div>
+      <div class="f-group"><label>Data de entrada no SON</label><input type="date" name="dataEntradaSON" value="${escapeHtml(p.dataEntradaSON)}"></div>
+      <div class="f-group"><label>Data de início da função</label><input type="date" name="dataInicioFuncao" value="${escapeHtml(p.dataInicioFuncao)}"></div>
+      <div class="f-group full"><label>Sua Função / Ministério (seleção múltipla)</label><div class="check-group">${checkGroup('areasAtuacao', p.areasAtuacao||[])}</div></div>
+
+      <div class="f-group"><label>Como conheceu o SON?</label><select name="comoConheceu">
+        <option value="">Selecione...</option>
+        ${ORIGEM_OPCOES.map(o=>`<option value="${o}" ${p.comoConheceu===o?'selected':''}>${o}</option>`).join('')}
+      </select></div>
+      <div class="f-group"><label>Quem convidou?</label><input type="text" name="quemConvidou" value="${escapeHtml(p.quemConvidou)}"></div>
+
+      <div class="f-group full"><label>Observações</label><textarea name="observacoes" placeholder="Ex: primeira participação, deseja participar da música...">${escapeHtml(p.observacoes)}</textarea></div>
+    </div>
+  </form>
+  `;
+}
+
+function openParticipantForm(id){
+  const p = id ? DB.participantes.find(x=>x.id===id) : null;
+  const body = `
+    ${p ? statusStepperHTML(p) : ''}
+    ${participantFormHTML(p)}
+  `;
+  openModal({
+    title: p ? 'Editar participante' : 'Novo participante',
+    body,
+    foot: `
+      ${p ? `<button class="btn btn-danger" data-action="delete-participant" data-id="${p.id}">Excluir</button>` : ''}
+      <button class="btn btn-outline" data-action="close-modal">Cancelar</button>
+      <button class="btn btn-primary" data-action="save-participant">${p?'Salvar alterações':'Cadastrar participante'}</button>
+    `
+  });
+  document.getElementById('f-dataNasc').addEventListener('change', (e)=>{
+    const idade=calcIdade(e.target.value);
+    document.getElementById('f-idade').value = idade!==null ? idade+' anos' : '';
+  });
+  document.querySelectorAll('[data-radio]').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const name=el.dataset.radio;
+      document.querySelectorAll(`[data-radio="${name}"]`).forEach(x=>x.classList.remove('sel'));
+      el.classList.add('sel');
+    });
+  });
+  document.querySelectorAll('[data-check]').forEach(el=>{
+    el.addEventListener('click', ()=> el.classList.toggle('sel'));
+  });
+}
+function statusStepperHTML(p){
+  return `
+  <div class="stepper">
+    ${STATUS_LIST.map(s=>`<div class="step-pill ${p.status===s.key?'current':''}" data-action="set-status" data-id="${p.id}" data-status="${s.key}">${s.label}</div>`).join('')}
+  </div>
+  <div class="history-line">${(p.statusHistorico||[]).map(h=>`${STATUS_LIST.find(s=>s.key===h.status)?.label||h.status} em ${fmtDate(h.data)}`).join(' → ')}</div>
+  `;
+}
+function saveParticipantFromForm(){
+  const form = document.getElementById('participant-form');
+  const fd = new FormData(form);
+  const id = form.dataset.id;
+  const getRadio = (name)=> { const el=document.querySelector(`[data-radio="${name}"].sel`); return el?el.dataset.val:''; };
+  const getChecks = ()=> Array.from(document.querySelectorAll('[data-check="interesseServir"].sel')).map(x=>x.dataset.val);
+
+  const nome = fd.get('nome')?.trim();
+  const telefone = fd.get('telefone')?.trim();
+  if(!nome || !telefone){ toast('Nome e telefone são obrigatórios.'); return; }
+
+  const data = {
+    nome, telefone,
+    dataNascimento: fd.get('dataNascimento')||'',
+    bairro: fd.get('bairro')?.trim()||'',
+    instagram: fd.get('instagram')?.trim()||'',
+    jaParticipouCelula: getRadio('jaParticipouCelula'),
+    fazParteGrupoSON: getRadio('fazParteGrupoSON'),
+    noWhatsapp: getRadio('noWhatsapp'),
+    caj: getRadio('caj'),
+    funcaoSON: fd.get('funcaoSON')||'Participante',
+    cargo: fd.get('cargo')?.trim()||'',
+    dataEntradaSON: fd.get('dataEntradaSON')||'',
+    dataInicioFuncao: fd.get('dataInicioFuncao')||'',
+    areasAtuacao: Array.from(document.querySelectorAll('[data-check="areasAtuacao"].sel')).map(x=>x.dataset.val),
+    interesseServir: getChecks(),
+    comoConheceu: fd.get('comoConheceu')||'',
+    quemConvidou: fd.get('quemConvidou')?.trim()||'',
+    observacoes: fd.get('observacoes')?.trim()||'',
+  };
+
+  if(id){
+    const p = DB.participantes.find(x=>x.id===id);
+    Object.assign(p, data);
+  } else {
+    DB.participantes.push({
+      id: uid(), ...data, status:'visitante',
+      statusHistorico:[{status:'visitante', data: todayISO()}],
+      criadoEm: todayISO(),
+    });
+  }
+  persist('participantes');
+  closeModal();
+  render();
+  toast(id ? 'Participante atualizado.' : 'Participante cadastrado!');
+}
+function setParticipantStatus(id, status){
+  const p = DB.participantes.find(x=>x.id===id);
+  if(!p || p.status===status) return;
+  p.status = status;
+  p.statusHistorico = p.statusHistorico || [];
+  p.statusHistorico.push({status, data: todayISO()});
+  persist('participantes');
+  openParticipantForm(id);
+  toast('Status atualizado para: '+(STATUS_LIST.find(s=>s.key===status)?.label||status));
+}
+function deleteParticipant(id){
+  openConfirm('Excluir participante?', 'Esta ação removerá também seu histórico de presença. Não é possível desfazer.', ()=>{
+    DB.participantes = DB.participantes.filter(p=>p.id!==id);
+    DB.presencas = DB.presencas.filter(pr=>pr.participanteId!==id);
+    persist('participantes'); persist('presencas');
+    closeModal(); render();
+    toast('Participante excluído.');
+  });
+}
+
+/* ============================================================
+   PRESENÇA
+============================================================ */
+let presFilterText='', presSelectedEvento=null;
+function viewPresenca(){
+  if(!presSelectedEvento && DB.eventos.length>0){
+    const futurosOuHoje = DB.eventos.filter(e=>e.data<=todayISO()).sort((a,b)=>b.data.localeCompare(a.data));
+    presSelectedEvento = (futurosOuHoje[0] || DB.eventos[0]).id;
+  }
+  const evento = DB.eventos.find(e=>e.id===presSelectedEvento);
+
+  if(DB.eventos.length===0){
+    return `
+    <div class="view-header"><div><h1>Controle de Presença</h1><p>Registre presenças por evento</p></div></div>
+    <div class="empty-state card"><div class="ic">📅</div><div class="t">Nenhum evento criado ainda</div><div>Crie um evento (ex: "Célula Junho") para começar a registrar presenças.</div>
+    <div style="margin-top:14px"><button class="btn btn-primary" data-action="nav" data-view="eventos">Ir para Eventos</button></div></div>
+    `;
+  }
+
+  const filtered = DB.participantes.filter(p=> !presFilterText || (p.nome||'').toLowerCase().includes(presFilterText.toLowerCase()) )
+    .sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
+
+  const presentesSet = new Set(DB.presencas.filter(p=>p.eventoId===presSelectedEvento).map(p=>p.participanteId));
+
+  return `
+  <div class="view-header"><div><h1>Controle de Presença</h1><p>${presentesSet.size} presentes em "${escapeHtml(evento?.nome||'')}"</p></div></div>
+  <div class="toolbar">
+    <select onchange="presSelectedEvento=this.value; render();">
+      ${DB.eventos.slice().sort((a,b)=>b.data.localeCompare(a.data)).map(e=>`<option value="${e.id}" ${presSelectedEvento===e.id?'selected':''}>${escapeHtml(e.nome)} — ${fmtDate(e.data)}</option>`).join('')}
+    </select>
+    <input type="text" placeholder="Buscar participante por nome..." value="${escapeHtml(presFilterText)}" oninput="presFilterText=this.value; render();">
+  </div>
+  ${filtered.length===0 ? `<div class="empty-state card"><div class="ic">🔍</div><div class="t">Nenhum participante encontrado</div></div>` : `
+  <div class="p-list">
+    ${filtered.map(p=>{
+      const presente = presentesSet.has(p.id);
+      const histCount = DB.presencas.filter(pr=>pr.participanteId===p.id).length;
+      return `<div class="p-row">
+        <div class="avatar">${escapeHtml((p.nome||'?').charAt(0).toUpperCase())}</div>
+        <div class="info"><div class="nm">${escapeHtml(p.nome)}</div><div class="meta">${histCount} presença(s) no total</div></div>
+        <button class="btn btn-sm ${presente?'btn-secondary':'btn-outline'}" data-action="toggle-presence" data-pid="${p.id}" data-eid="${presSelectedEvento}">${presente?'✓ Presente':'Marcar presença'}</button>
+      </div>`;
+    }).join('')}
+  </div>`}
+
+  <div class="card" style="margin-top:24px">
+    <h3 style="margin-bottom:12px;font-size:14.5px">Histórico de presença por participante</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Nome</th><th>Presenças</th><th>Primeira participação</th><th>Última presença</th></tr></thead>
+      <tbody>
+        ${DB.participantes.length===0 ? '<tr><td colspan="4" style="text-align:center;color:var(--text-soft)">Sem dados</td></tr>' :
+          DB.participantes.map(p=>{
+            const presList = DB.presencas.filter(pr=>pr.participanteId===p.id).sort((a,b)=>a.data.localeCompare(b.data));
+            return `<tr><td>${escapeHtml(p.nome)}</td><td>${presList.length}</td><td>${presList.length?fmtDate(presList[0].data):'—'}</td><td>${presList.length?fmtDate(presList[presList.length-1].data):'—'}</td></tr>`;
+          }).join('')}
+      </tbody>
+    </table></div>
+  </div>
+  `;
+}
+function togglePresence(pid, eid){
+  const existing = DB.presencas.find(p=>p.participanteId===pid && p.eventoId===eid);
+  if(existing){
+    DB.presencas = DB.presencas.filter(p=>p!==existing);
+  } else {
+    DB.presencas.push({ id:uid(), participanteId:pid, eventoId:eid, data: todayISO() });
+  }
+  persist('presencas');
+  render();
+}
+
+/* ============================================================
+   EVENTOS
+============================================================ */
+function viewEventos(){
+  const sorted = DB.eventos.slice().sort((a,b)=>b.data.localeCompare(a.data));
+  return `
+  <div class="view-header">
+    <div><h1>Eventos</h1><p>${DB.eventos.length} evento(s) cadastrado(s)</p></div>
+    <button class="btn btn-primary" data-action="open-event-form"><span>＋</span> Novo evento</button>
+  </div>
+  ${sorted.length===0 ? `<div class="empty-state card"><div class="ic">📅</div><div class="t">Nenhum evento cadastrado</div><div>Crie eventos como "Célula Junho" ou "Retiro SON".</div></div>` : `
+  <div class="table-wrap"><table>
+    <thead><tr><th>Nome</th><th>Data</th><th>Horário</th><th>Local</th><th>Presentes</th><th></th></tr></thead>
+    <tbody>
+      ${sorted.map(e=>{
+        const presentes = new Set(DB.presencas.filter(p=>p.eventoId===e.id).map(p=>p.participanteId)).size;
+        return `<tr>
+          <td><strong>${escapeHtml(e.nome)}</strong>${e.descricao?`<br><span style="color:var(--text-soft);font-size:11.5px">${escapeHtml(e.descricao)}</span>`:''}</td>
+          <td>${fmtDate(e.data)}</td><td>${escapeHtml(e.horario||'—')}</td><td>${escapeHtml(e.local||'—')}</td>
+          <td>${presentes}</td>
+          <td class="row-actions">
+            <button class="btn-icon" data-action="open-event-form" data-id="${e.id}" title="Editar">✎</button>
+            <button class="btn-icon" data-action="delete-event" data-id="${e.id}" title="Excluir" style="background:var(--danger-soft);color:var(--danger)">✕</button>
+          </td>
+        </tr>`;
+      }).join('')}
+    </tbody>
+  </table></div>`}
+  `;
+}
+function openEventForm(id){
+  const e = id ? DB.eventos.find(x=>x.id===id) : { id:null,nome:'',data:todayISO(),horario:'',local:'',descricao:'' };
+  openModal({
+    title: id ? 'Editar evento' : 'Novo evento',
+    body: `
+    <form id="event-form" data-id="${e.id||''}">
+      <div class="form-grid">
+        <div class="f-group full"><label>Nome do evento *</label><input type="text" name="nome" required value="${escapeHtml(e.nome)}" placeholder="Ex: Célula Junho"></div>
+        <div class="f-group"><label>Data *</label><input type="date" name="data" required value="${e.data}"></div>
+        <div class="f-group"><label>Horário</label><input type="text" name="horario" value="${escapeHtml(e.horario)}" placeholder="19:30"></div>
+        <div class="f-group full"><label>Local</label><input type="text" name="local" value="${escapeHtml(e.local)}"></div>
+        <div class="f-group full"><label>Descrição</label><textarea name="descricao">${escapeHtml(e.descricao)}</textarea></div>
+      </div>
+    </form>`,
+    foot: `<button class="btn btn-outline" data-action="close-modal">Cancelar</button><button class="btn btn-primary" data-action="save-event">${id?'Salvar':'Criar evento'}</button>`
+  });
+}
+function saveEventFromForm(){
+  const form=document.getElementById('event-form');
+  const fd=new FormData(form);
+  const id=form.dataset.id;
+  const nome=fd.get('nome')?.trim(), data=fd.get('data');
+  if(!nome||!data){ toast('Nome e data são obrigatórios.'); return; }
+  const payload={ nome, data, horario:fd.get('horario')?.trim()||'', local:fd.get('local')?.trim()||'', descricao:fd.get('descricao')?.trim()||'' };
+  if(id){ Object.assign(DB.eventos.find(x=>x.id===id), payload); }
+  else{ DB.eventos.push({ id:uid(), ...payload, criadoEm: todayISO() }); }
+  persist('eventos'); closeModal(); render();
+  toast(id?'Evento atualizado.':'Evento criado!');
+}
+function deleteEvent(id){
+  openConfirm('Excluir evento?', 'As presenças registradas neste evento também serão removidas.', ()=>{
+    DB.eventos = DB.eventos.filter(e=>e.id!==id);
+    DB.presencas = DB.presencas.filter(p=>p.eventoId!==id);
+    if(presSelectedEvento===id) presSelectedEvento=null;
+    persist('eventos'); persist('presencas');
+    closeModal(); render();
+    toast('Evento excluído.');
+  });
+}
+
+/* ============================================================
+   RELATÓRIOS
+============================================================ */
+let relatorioAtivo='visitantes';
+function viewRelatorios(){
+  const tabs = [
+    {k:'visitantes', l:'Visitantes'},
+    {k:'whatsapp', l:'Fora do WhatsApp'},
+    {k:'caj', l:'Interessados CAJ'},
+    {k:'servico', l:'Por área de serviço'},
+    {k:'estrutura', l:'Equipe SON'},
+    {k:'frequencia', l:'Frequência'},
+  ];
+  return `
+  <div class="view-header"><div><h1>Relatórios</h1><p>Indicadores estratégicos da comunidade</p></div></div>
+  <div class="report-tabs">${tabs.map(t=>`<div class="report-tab ${relatorioAtivo===t.k?'active':''}" onclick="relatorioAtivo='${t.k}'; render();">${t.l}</div>`).join('')}</div>
+  <div class="card">${renderRelatorioConteudo()}</div>
+  `;
+}
+function renderRelatorioConteudo(){
+  if(relatorioAtivo==='visitantes'){
+    const list = DB.participantes.filter(p=>p.status==='visitante');
+    return tableOrEmpty(list, ['Nome','Telefone','Bairro','Primeira participação'],
+      list.map(p=>[p.nome, p.telefone, p.bairro||'—', fmtDate(p.criadoEm)]), 'visitantes');
+  }
+  if(relatorioAtivo==='whatsapp'){
+    const list = DB.participantes.filter(p=>p.noWhatsapp==='nao');
+    return tableOrEmpty(list, ['Nome','Telefone','Bairro','Status'],
+      list.map(p=>[p.nome, p.telefone, p.bairro||'—', STATUS_LIST.find(s=>s.key===p.status)?.label]), 'fora_whatsapp');
+  }
+  if(relatorioAtivo==='caj'){
+    const list = DB.participantes.filter(p=>p.caj==='sim');
+    return tableOrEmpty(list, ['Nome','Telefone','Idade','Status'],
+      list.map(p=>[p.nome, p.telefone, calcIdade(p.dataNascimento)??'—', STATUS_LIST.find(s=>s.key===p.status)?.label]), 'interessados_caj');
+  }
+  if(relatorioAtivo==='servico'){
+    return INTERESSE_OPCOES.map(area=>{
+      const list = DB.participantes.filter(p=>(p.areasAtuacao||[]).includes(area));
+      return `<h3 style="margin:18px 0 8px;font-size:13.5px;color:var(--primary)">${area} (${list.length})</h3>
+        ${list.length===0?'<p style="color:var(--text-soft);font-size:13px">Nenhum interessado.</p>':
+          `<div class="table-wrap"><table><thead><tr><th>Nome</th><th>Telefone</th></tr></thead><tbody>${list.map(p=>`<tr><td>${escapeHtml(p.nome)}</td><td>${escapeHtml(p.telefone)}</td></tr>`).join('')}</tbody></table></div>`}`;
+    }).join('') + `<div style="margin-top:16px"><button class="btn btn-outline btn-sm" data-action="export" data-format="csv" data-dataset="servico">Exportar CSV</button></div>`;
+  }
+  if(relatorioAtivo==='estrutura'){
+    const list = DB.participantes.slice().sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
+    return tableOrEmpty(list,
+      ['Nome','Telefone','Função','Ministério','Cargo','Tempo no SON','Tempo na Função','Última Presença'],
+      list.map(p=>[
+        p.nome,
+        p.telefone,
+        p.funcaoSON||'Participante',
+        (p.areasAtuacao||[]).join(', ')||'—',
+        p.cargo||'—',
+        tempoEm(p.dataEntradaSON),
+        tempoEm(p.dataInicioFuncao),
+        fmtDate(DB.presencas.filter(pr=>pr.participanteId===p.id).sort((a,b)=>b.data.localeCompare(a.data))[0]?.data)
+      ]),
+      'estrutura_son');
+  }
+  if(relatorioAtivo==='frequencia'){
+    const withStats = DB.participantes.map(p=>{
+      const presList = DB.presencas.filter(pr=>pr.participanteId===p.id).sort((a,b)=>b.data.localeCompare(a.data));
+      return { p, count: presList.length, ultima: presList[0]?.data || null };
+    });
+    const maisPresentes = withStats.slice().sort((a,b)=>b.count-a.count).slice(0,15).filter(x=>x.count>0);
+    const ausentes30 = withStats.filter(x=>{ const d=x.ultima?daysSince(x.ultima):daysSince(x.p.criadoEm); return d!==null && d>30; });
+    const ausentes60 = ausentes30.filter(x=>{ const d=x.ultima?daysSince(x.ultima):daysSince(x.p.criadoEm); return d>60; });
+    return `
+    <h3 style="font-size:13.5px;color:var(--primary);margin-bottom:8px">Participantes mais presentes</h3>
+    ${tableOrEmpty(maisPresentes,['Nome','Presenças','Última presença'], maisPresentes.map(x=>[x.p.nome,x.count,fmtDate(x.ultima)]),'mais_presentes')}
+    <h3 style="font-size:13.5px;color:var(--primary);margin:20px 0 8px">Ausentes há mais de 30 dias</h3>
+    ${tableOrEmpty(ausentes30,['Nome','Telefone','Última presença'], ausentes30.map(x=>[x.p.nome,x.p.telefone,x.ultima?fmtDate(x.ultima):'Nunca presente']),'ausentes_30')}
+    <h3 style="font-size:13.5px;color:var(--primary);margin:20px 0 8px">Ausentes há mais de 60 dias</h3>
+    ${tableOrEmpty(ausentes60,['Nome','Telefone','Última presença'], ausentes60.map(x=>[x.p.nome,x.p.telefone,x.ultima?fmtDate(x.ultima):'Nunca presente']),'ausentes_60')}
+    `;
+  }
+  return '';
+}
+function tableOrEmpty(list, headers, rows, datasetKey){
+  if(list.length===0) return `<div class="empty-state"><div class="ic">📭</div><div class="t">Nenhum registro encontrado</div></div>`;
+  return `
+  <div class="table-wrap"><table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+  <tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${escapeHtml(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
+  <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn btn-outline btn-sm" data-action="export" data-format="csv" data-dataset="${datasetKey}">Exportar CSV</button>
+    <button class="btn btn-outline btn-sm" data-action="export" data-format="xlsx" data-dataset="${datasetKey}">Exportar Excel</button>
+    <button class="btn btn-outline btn-sm" data-action="export" data-format="pdf" data-dataset="${datasetKey}">Exportar PDF</button>
+  </div>
+  `;
+}
+function getReportData(key){
+  if(key==='visitantes'){ const l=DB.participantes.filter(p=>p.status==='visitante'); return {headers:['Nome','Telefone','Bairro','Primeira participação'], rows:l.map(p=>[p.nome,p.telefone,p.bairro||'—',fmtDate(p.criadoEm)]), title:'Relatório de Visitantes'}; }
+  if(key==='fora_whatsapp'){ const l=DB.participantes.filter(p=>p.noWhatsapp==='nao'); return {headers:['Nome','Telefone','Bairro','Status'], rows:l.map(p=>[p.nome,p.telefone,p.bairro||'—',STATUS_LIST.find(s=>s.key===p.status)?.label]), title:'Participantes fora do WhatsApp'}; }
+  if(key==='interessados_caj'){ const l=DB.participantes.filter(p=>p.caj==='sim'); return {headers:['Nome','Telefone','Idade','Status'], rows:l.map(p=>[p.nome,p.telefone,calcIdade(p.dataNascimento)??'—',STATUS_LIST.find(s=>s.key===p.status)?.label]), title:'Interessados no CAJ'}; }
+  if(key==='servico'){ const rows=[]; INTERESSE_OPCOES.forEach(area=>{ DB.participantes.filter(p=>(p.areasAtuacao||[]).includes(area)).forEach(p=>rows.push([area,p.nome,p.telefone])); }); return {headers:['Área','Nome','Telefone'], rows, title:'Relatório de Serviço'}; }
+  if(key==='estrutura_son'){ const list = DB.participantes.slice().sort((a,b)=>(a.nome||'').localeCompare(b.nome||'')); return {headers:['Nome','Telefone','Função','Ministério','Cargo','Tempo no SON','Tempo na Função','Última Presença'], rows:list.map(p=>[p.nome,p.telefone,p.funcaoSON||'Participante',(p.areasAtuacao||[]).join(', ')||'—',p.cargo||'—',tempoEm(p.dataEntradaSON),tempoEm(p.dataInicioFuncao),fmtDate(DB.presencas.filter(pr=>pr.participanteId===p.id).sort((a,b)=>b.data.localeCompare(a.data))[0]?.data)]), title:'Relatório da Equipe SON'}; }
+  if(key==='mais_presentes'){ const ws=DB.participantes.map(p=>({p,count:DB.presencas.filter(pr=>pr.participanteId===p.id).length})).sort((a,b)=>b.count-a.count).filter(x=>x.count>0).slice(0,15); return {headers:['Nome','Presenças'], rows:ws.map(x=>[x.p.nome,x.count]), title:'Mais presentes'}; }
+  if(key==='ausentes_30'||key==='ausentes_60'){ const lim=key==='ausentes_30'?30:60; const l=DB.participantes.filter(p=>{ const presList=DB.presencas.filter(pr=>pr.participanteId===p.id).sort((a,b)=>b.data.localeCompare(a.data)); const ultima=presList[0]?.data||null; const d=ultima?daysSince(ultima):daysSince(p.criadoEm); return d!==null && d>lim; }); return {headers:['Nome','Telefone'], rows:l.map(p=>[p.nome,p.telefone]), title:'Ausentes há mais de '+lim+' dias'}; }
+  return {headers:[],rows:[],title:'Relatório'};
+}
+
+/* ============================================================
+   BACKUP / EXPORT / IMPORT
+============================================================ */
+function viewBackup(){
+  const backupText = getBackupDisplayText();
+  return `
+  <div class="view-header"><div><h1>Backup &amp; Configurações</h1><p>Exporte, restaure e proteja os dados da sua Célula</p></div></div>
+  <div class="charts-grid">
+    <div class="card">
+      <h3 style="margin-bottom:10px">Backup completo</h3>
+      <p style="font-size:13px;color:var(--text-soft);margin-bottom:12px">${backupText}</p>
+      <button class="btn btn-primary ${highlightBackupButton?'highlight-backup':''}" data-action="download-backup">💾 Baixar Backup Completo</button>
+    </div>
+    <div class="card">
+      <h3 style="margin-bottom:10px">Restaurar backup</h3>
+      <p style="font-size:13px;color:var(--text-soft);margin-bottom:16px">Importe um arquivo de backup JSON exportado anteriormente. Isso substituirá os dados atuais.</p>
+      <input type="file" id="import-file" accept=".json" style="margin-bottom:10px;font-size:13px;max-width:100%">
+      <br><button class="btn btn-secondary" data-action="import-backup">Importar Backup</button>
+    </div>
+    <div class="card">
+      <h3 style="margin-bottom:10px">Exportações específicas</h3>
+      <p style="font-size:13px;color:var(--text-soft);margin-bottom:14px">Exporte listas específicas em formatos diferentes.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <button class="btn btn-outline btn-sm" data-action="export" data-format="xlsx" data-dataset="todos_participantes">Participantes (Excel)</button>
+        <button class="btn btn-outline btn-sm" data-action="export" data-format="csv" data-dataset="todos_participantes">Participantes (CSV)</button>
+        <button class="btn btn-outline btn-sm" data-action="export" data-format="pdf" data-dataset="todos_participantes">Participantes (PDF)</button>
+      </div>
+    </div>
+    <div class="card">
+      <h3 style="margin-bottom:10px">Sobre o armazenamento</h3>
+      <p style="font-size:13px;color:var(--text-soft);line-height:1.6">Os dados são salvos automaticamente e ficam disponíveis para toda a liderança que acessar esta plataforma — sem necessidade de login. Funciona mesmo sem internet; assim que a conexão voltar, os dados são sincronizados. A preferência de tema (claro/escuro) é salva individualmente em cada dispositivo.</p>
+    </div>
+  </div>
+  `;
+}
+function exportJSONFile(obj, filename){
+  const blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'});
+  triggerDownload(blob, filename);
+}
+function exportCSVFile(headers, rows, filename){
+  const esc=(v)=>{ const s=String(v??''); return /[",\n;]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s; };
+  const csv = [headers.map(esc).join(';'), ...rows.map(r=>r.map(esc).join(';'))].join('\n');
+  const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
+  triggerDownload(blob, filename);
+}
+function exportXLSXFile(headers, rows, filename, sheetName){
+  if(!window.XLSX){ toast('Biblioteca de Excel não carregada.'); return; }
+  const data=[headers, ...rows];
+  const ws = XLSX.utils.aoa_to_sheet(data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, sheetName||'Dados');
+  XLSX.writeFile(wb, filename);
+}
+function exportPDFFile(title, headers, rows, filename){
+  if(!window.jspdf){ toast('Biblioteca de PDF não carregada.'); return; }
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  doc.setFontSize(15); doc.setTextColor(91,33,182); doc.text(title, 14, 16);
+  doc.setFontSize(9); doc.setTextColor(120,120,120); doc.text('SON Cell — gerado em '+new Date().toLocaleDateString('pt-BR'), 14, 22);
+  let y = 32; const colW = (190)/headers.length; const rowH=8;
+  doc.setFontSize(9); doc.setTextColor(255,255,255); doc.setFillColor(91,33,182);
+  doc.rect(14,y-5,182,rowH,'F');
+  headers.forEach((h,i)=> doc.text(String(h).slice(0,22), 16+i*colW, y));
+  y+=rowH; doc.setTextColor(40,40,40);
+  rows.forEach((r,idx)=>{
+    if(y>280){ doc.addPage(); y=20; }
+    if(idx%2===0){ doc.setFillColor(248,247,252); doc.rect(14,y-5,182,rowH,'F'); }
+    r.forEach((c,i)=> doc.text(String(c??'—').slice(0,26), 16+i*colW, y));
+    y+=rowH;
+  });
+  doc.save(filename);
+}
+function triggerDownload(blob, filename){
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 200);
+}
+function handleExport(format, datasetKey){
+  let headers, rows, title;
+  if(datasetKey==='todos_participantes'){
+    headers=['Nome','Telefone','Bairro','Idade','Função','Ministério','Cargo','Tempo no SON','Tempo na Função','Status','WhatsApp','CAJ','Como conheceu'];
+    rows = DB.participantes.map(p=>[p.nome,p.telefone,p.bairro||'—',calcIdade(p.dataNascimento)??'—',p.funcaoSON||'Participante',(p.areasAtuacao||[]).join(', ')||'—',p.cargo||'—',tempoEm(p.dataEntradaSON),tempoEm(p.dataInicioFuncao),STATUS_LIST.find(s=>s.key===p.status)?.label,p.noWhatsapp==='sim'?'Sim':'Não',p.caj||'—',p.comoConheceu||'—']);
+    title='Todos os Participantes';
+  } else {
+    const d = getReportData(datasetKey);
+    headers=d.headers; rows=d.rows; title=d.title;
+  }
+  const fname = title.toLowerCase().replace(/[^a-z0-9]+/g,'_');
+  if(format==='csv') exportCSVFile(headers, rows, fname+'.csv');
+  else if(format==='xlsx') exportXLSXFile(headers, rows, fname+'.xlsx', title.slice(0,28));
+  else if(format==='pdf') exportPDFFile(title, headers, rows, fname+'.pdf');
+  toast('Exportação gerada: '+title);
+}
+function downloadBackupCompleto(){
+  exportJSONFile({ participantes:DB.participantes, eventos:DB.eventos, presencas:DB.presencas, exportadoEm:new Date().toISOString(), origem:'SON Cell' }, 'son_cell_backup_'+todayISO()+'.json');
+  lastBackupAt = new Date().toISOString();
+  window.storage.set('soncell:last_backup', lastBackupAt, false).catch(()=>{});
+  toast('Backup completo baixado!');
+  render();
+}
+function importBackupFile(){
+
+  const input=document.getElementById('import-file');
+  if(!input.files || !input.files[0]){ toast('Selecione um arquivo de backup primeiro.'); return; }
+  const file=input.files[0];
+  const reader=new FileReader();
+  reader.onload = (e)=>{
+    try{
+      const data = JSON.parse(e.target.result);
+      if(!data.participantes && !data.eventos && !data.presencas){ toast('Arquivo de backup inválido.'); return; }
+      openConfirm('Restaurar backup?', 'Isso substituirá TODOS os dados atuais (participantes, eventos e presenças) pelos dados deste arquivo. Esta ação não pode ser desfeita.', ()=>{
+        DB.participantes = data.participantes || [];
+        DB.eventos = data.eventos || [];
+        DB.presencas = data.presencas || [];
+        persist('participantes'); persist('eventos'); persist('presencas');
+        closeModal(); render();
+        toast('Backup restaurado com sucesso!');
+      });
+    }catch(err){ toast('Erro ao ler o arquivo. Verifique se é um backup válido.'); }
+  };
+  reader.readAsText(file);
+}
+
+/* ============================================================
+   BUSCA GLOBAL
+============================================================ */
+function globalSearch(term){
+  const box=document.getElementById('search-results');
+  if(!term){ box.style.display='none'; box.innerHTML=''; return; }
+  const t=term.toLowerCase();
+  const matches = DB.participantes.filter(p=>{
+    return [p.nome,p.telefone,p.bairro,p.quemConvidou,STATUS_LIST.find(s=>s.key===p.status)?.label, (p.interesseServir||[]).join(' ')]
+      .some(v=> v && String(v).toLowerCase().includes(t));
+  }).slice(0,8);
+  box.style.display='block';
+  box.innerHTML = matches.length===0 ? `<div class="sr-empty">Nenhum participante encontrado para "${escapeHtml(term)}"</div>` :
+    matches.map(p=>`<div class="sr-item" data-action="search-goto" data-id="${p.id}"><span class="nm">${escapeHtml(p.nome)}</span><span class="meta">${escapeHtml(p.telefone||'')} · ${STATUS_LIST.find(s=>s.key===p.status)?.label}</span></div>`).join('');
+}
+
+/* ============================================================
+   MODAL / CONFIRM
+============================================================ */
+function openModal({title, body, foot}){
+  document.getElementById('modal-box').innerHTML = `
+    <div class="modal-head"><h2>${title}</h2><button class="close-x" data-action="close-modal">✕</button></div>
+    <div class="modal-body">${body}</div>
+    ${foot?`<div class="modal-foot">${foot}</div>`:''}
+  `;
+  document.getElementById('modal-root').style.display='block';
+}
+function closeModal(){ document.getElementById('modal-root').style.display='none'; document.getElementById('modal-box').innerHTML=''; }
+function openConfirm(title, msg, onConfirm){
+  openModal({ title, body:`<p style="font-size:13.5px;color:var(--text-soft);line-height:1.6">${msg}</p>`,
+    foot:`<button class="btn btn-outline" data-action="close-modal">Cancelar</button><button class="btn btn-danger" id="confirm-btn">Confirmar</button>` });
+  document.getElementById('confirm-btn').onclick = onConfirm;
+}
+
+/* ============================================================
+   EVENTOS GLOBAIS (delegação)
+============================================================ */
+document.addEventListener('click', (e)=>{
+  const el = e.target.closest('[data-action]');
+  if(!el) return;
+  const action = el.dataset.action;
+  if(action==='nav') navigateTo(el.dataset.view);
+  else if(action==='toggle-sidebar') document.getElementById('sidebar').classList.toggle('mobile-open');
+  else if(action==='toggle-theme') toggleTheme();
+  else if(action==='enter-system') enterSystem();
+  else if(action==='open-participant-form') openParticipantForm(el.dataset.id||null);
+  else if(action==='edit-participant') openParticipantForm(el.dataset.id);
+  else if(action==='delete-participant') deleteParticipant(el.dataset.id);
+  else if(action==='save-participant') saveParticipantFromForm();
+  else if(action==='set-status') setParticipantStatus(el.dataset.id, el.dataset.status);
+  else if(action==='toggle-presence') togglePresence(el.dataset.pid, el.dataset.eid);
+  else if(action==='open-event-form') openEventForm(el.dataset.id||null);
+  else if(action==='save-event') saveEventFromForm();
+  else if(action==='delete-event') deleteEvent(el.dataset.id);
+  else if(action==='export') handleExport(el.dataset.format, el.dataset.dataset);
+  else if(action==='download-backup') downloadBackupCompleto();
+  else if(action==='request-backup') requestBackupNow();
+  else if(action==='continue-exit') continueExit();
+  else if(action==='import-backup') importBackupFile();
+  else if(action==='close-modal') closeModal();
+  else if(action==='search-goto'){
+    document.getElementById('search-results').style.display='none';
+    document.getElementById('global-search').value='';
+    navigateTo('participantes');
+    setTimeout(()=>openParticipantForm(el.dataset.id), 50);
+  }
+});
+document.getElementById('global-search').addEventListener('input', (e)=> globalSearch(e.target.value.trim()));
+document.addEventListener('click', (e)=>{
+  if(!e.target.closest('.search-wrap')) document.getElementById('search-results').style.display='none';
+});
+
+/* ============================================================
+   INIT
+============================================================ */
+async function init(){
+  await loadTheme();
+  await loadAll();
+  loadResponsavel();
+  document.getElementById('loading-screen').style.display='none';
+  if(userName){
+    document.getElementById('main-app').style.display='flex';
+    updateTopbarInfo();
+    buildNav();
+    render();
+  } else {
+    document.getElementById('entry-screen').style.display='flex';
+  }
+}
+init();
+</script>
+</body>
+</html>
